@@ -1,0 +1,34 @@
+[
+  {
+    "feature": "Total spend to date ($)",
+    "importance": 0.2287
+  },
+  {
+    "feature": "Monthly charges ($)",
+    "importance": 0.2171
+  },
+  {
+    "feature": "Time as customer (months)",
+    "importance": 0.1798
+  },
+  {
+    "feature": "Month-to-month contract",
+    "importance": 0.0914
+  },
+  {
+    "feature": "No online security",
+    "importance": 0.0366
+  },
+  {
+    "feature": "Two-year contract",
+    "importance": 0.0361
+  },
+  {
+    "feature": "No technical support",
+    "importance": 0.0305
+  },
+  {
+    "feature": "Fiber optic internet service",
+    "importance": 0.0285
+  }
+]

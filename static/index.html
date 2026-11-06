@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChurnGuard | Customer Churn Prediction & Retention Platform</title>
+  <meta name="description" content="AI-powered customer churn prediction engine built with FastAPI, Scikit-learn, and interactive real-time retention intelligence.">
+  <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
+  
+  <!-- Inter Font with system fallbacks for fast, offline-resilient rendering -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <!-- Ambient Animated Gradient Blobs -->
+  <div class="blob-container" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- 1. Sticky Navigation Bar -->
+  <header class="navbar" id="navbar">
+    <div class="nav-content container">
+      <a href="#hero" class="nav-brand" aria-label="ChurnGuard Home">
+        <img src="/static/img/logo.svg" alt="ChurnGuard Shield Logo" class="brand-logo" width="36" height="36">
+        <span class="brand-text">Churn<span class="brand-accent">Guard</span></span>
+      </a>
+
+      <nav class="nav-links" aria-label="Main Navigation">
+        <a href="#predictor" class="nav-link">Predict</a>
+        <a href="#insights" class="nav-link">Insights</a>
+        <a href="#about" class="nav-link">About</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle light or dark theme" title="Toggle Theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- 2. Hero Section -->
+    <section class="hero-section" id="hero">
+      <div class="container hero-grid">
+        <div class="hero-text-col reveal-on-scroll">
+          <div class="hero-badge">
+            <span class="badge-dot"></span>
+            Machine Learning REST API &amp; Interactive Dashboard
+          </div>
+          <h1 class="hero-title">
+            Predict customer churn <br>
+            <span class="text-gradient">before it happens.</span>
+          </h1>
+          <p class="hero-subtitle">
+            Evaluate cancellation risks in real time using a Random Forest classification pipeline.
+            Receive instant, data-driven retention playbooks tailored to each customer profile.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="#predictor" class="btn btn-primary btn-glow">
+              <span>Try the Predictor</span>
+              <svg viewBox="0 0 20 20" width="18" height="18" fill="currentColor">
+                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+              </svg>
+            </a>
+            <a href="#insights" class="btn btn-secondary">
+              <span>View Model Insights</span>
+            </a>
+          </div>
+
+          <!-- Hero Metrics Counters -->
+          <div class="hero-stats-row">
+            <div class="hero-stat-card">
+              <span class="hero-stat-number" id="hero-stat-records" data-target="7032">0</span>
+              <span class="hero-stat-label">Trained Customers</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat-card">
+              <span class="hero-stat-number" id="hero-stat-auc" data-target="83.6" data-suffix="%">0%</span>
+              <span class="hero-stat-label">Model ROC-AUC</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat-card">
+              <span class="hero-stat-number" id="hero-stat-acc" data-target="76.9" data-suffix="%">0%</span>
+              <span class="hero-stat-label">Overall Accuracy</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-image-col reveal-on-scroll">
+          <div class="hero-illustration-wrapper">
+            <img src="/static/img/hero.svg" alt="ChurnGuard Predictive Dashboard Preview" class="hero-svg-img" width="520" height="400">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Predictor Section -->
+    <section class="predictor-section" id="predictor">
+      <div class="container">
+        <div class="section-header reveal-on-scroll">
+          <span class="section-tag">Live Demonstration</span>
+          <h2 class="section-title">Customer Risk Simulator</h2>
+          <p class="section-desc">
+            Adjust customer attributes below to execute real-time inference against the trained scikit-learn pipeline.
+          </p>
+        </div>
+
+        <!-- Predictor Main Grid -->
+        <div class="predictor-grid">
+          <!-- Form Card -->
+          <div class="glass-card form-card reveal-on-scroll">
+            <div class="card-header-bar">
+              <h3 class="card-title">Customer Profile Attributes</h3>
+              <div class="preset-pill-group">
+                <button type="button" id="btn-preset-high" class="btn-preset btn-preset-danger" title="Load High Risk Preset">
+                  <span class="preset-dot danger"></span> High Risk
+                </button>
+                <button type="button" id="btn-preset-low" class="btn-preset btn-preset-success" title="Load Low Risk Preset">
+                  <span class="preset-dot success"></span> Low Risk
+                </button>
+                <button type="button" id="btn-reset-form" class="btn-preset" title="Reset to Defaults">
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <form id="churn-form" novalidate>
+              <!-- Numeric Sliders -->
+              <div class="form-section-title">1. Account Tenures &amp; Billing</div>
+              
+              <div class="form-row-grid">
+                <!-- Tenure Slider -->
+                <div class="form-group">
+                  <div class="slider-header">
+                    <label for="tenure" class="form-label">Tenure (Duration as Customer)</label>
+                    <span class="slider-bubble" id="tenure-value">12 months</span>
+                  </div>
+                  <input type="range" id="tenure" name="tenure" min="0" max="72" value="12" class="range-slider">
+                  <div class="slider-ticks">
+                    <span>New (0m)</span>
+                    <span>36m</span>
+                    <span>Loyal (72m)</span>
+                  </div>
+                </div>
+
+                <!-- Monthly Charges Slider -->
+                <div class="form-group">
+                  <div class="slider-header">
+                    <label for="monthly_charges" class="form-label">Monthly Charges ($)</label>
+                    <span class="slider-bubble" id="monthly-value">$65.00</span>
+                  </div>
+                  <input type="range" id="monthly_charges" name="monthly_charges" min="18" max="120" step="0.5" value="65" class="range-slider">
+                  <div class="slider-ticks">
+                    <span>$18</span>
+                    <span>$65</span>
+                    <span>$120</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Total Charges Field (Auto-calculated, editable) -->
+              <div class="form-group total-charges-wrapper">
+                <div class="total-header">
+                  <label for="total_charges" class="form-label">Estimated Total Spend ($)</label>
+                  <span class="helper-badge">Auto: Tenure &times; Monthly</span>
+                </div>
+                <input type="number" id="total_charges" name="total_charges" min="0" step="0.01" value="780.00" class="form-input">
+                <small class="form-helper-text">Computed automatically to prevent data inconsistency, but fully customizable.</small>
+              </div>
+
+              <!-- Segmented Controls: Contract & Internet -->
+              <div class="form-section-title">2. Service &amp; Contract Details</div>
+
+              <div class="form-group">
+                <label class="form-label">Contract Type</label>
+                <div class="segmented-control" role="radiogroup" aria-label="Contract Type">
+                  <label class="segment-option">
+                    <input type="radio" name="contract" value="Month-to-month" checked>
+                    <span class="segment-btn">Month-to-month</span>
+                  </label>
+                  <label class="segment-option">
+                    <input type="radio" name="contract" value="One year">
+                    <span class="segment-btn">One Year</span>
+                  </label>
+                  <label class="segment-option">
+                    <input type="radio" name="contract" value="Two year">
+                    <span class="segment-btn">Two Year</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Internet Service Provider</label>
+                <div class="segmented-control" role="radiogroup" aria-label="Internet Service">
+                  <label class="segment-option">
+                    <input type="radio" name="internet_service" value="Fiber optic" checked>
+                    <span class="segment-btn">Fiber Optic</span>
+                  </label>
+                  <label class="segment-option">
+                    <input type="radio" name="internet_service" value="DSL">
+                    <span class="segment-btn">DSL</span>
+                  </label>
+                  <label class="segment-option">
+                    <input type="radio" name="internet_service" value="No">
+                    <span class="segment-btn">None</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-row-grid">
+                <div class="form-group">
+                  <label class="form-label">Tech Support</label>
+                  <div class="segmented-control" role="radiogroup" aria-label="Tech Support">
+                    <label class="segment-option">
+                      <input type="radio" name="tech_support" value="No" checked>
+                      <span class="segment-btn">No</span>
+                    </label>
+                    <label class="segment-option">
+                      <input type="radio" name="tech_support" value="Yes">
+                      <span class="segment-btn">Yes</span>
+                    </label>
+                    <label class="segment-option">
+                      <input type="radio" name="tech_support" value="No internet service">
+                      <span class="segment-btn">N/A</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Online Security</label>
+                  <div class="segmented-control" role="radiogroup" aria-label="Online Security">
+                    <label class="segment-option">
+                      <input type="radio" name="online_security" value="No" checked>
+                      <span class="segment-btn">No</span>
+                    </label>
+                    <label class="segment-option">
+                      <input type="radio" name="online_security" value="Yes">
+                      <span class="segment-btn">Yes</span>
+                    </label>
+                    <label class="segment-option">
+                      <input type="radio" name="online_security" value="No internet service">
+                      <span class="segment-btn">N/A</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Payment & Billing -->
+              <div class="form-section-title">3. Payment &amp; Paperless Options</div>
+              
+              <div class="form-row-grid">
+                <div class="form-group">
+                  <label for="payment_method" class="form-label">Payment Method</label>
+                  <div class="custom-select-wrapper">
+                    <select id="payment_method" name="payment_method" class="form-select">
+                      <option value="Electronic check" selected>Electronic check (High Churn)</option>
+                      <option value="Mailed check">Mailed check</option>
+                      <option value="Bank transfer (automatic)">Bank transfer (automatic)</option>
+                      <option value="Credit card (automatic)">Credit card (automatic)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Paperless Billing</label>
+                  <div class="segmented-control" role="radiogroup" aria-label="Paperless Billing">
+                    <label class="segment-option">
+                      <input type="radio" name="paperless_billing" value="Yes" checked>
+                      <span class="segment-btn">Yes</span>
+                    </label>
+                    <label class="segment-option">
+                      <input type="radio" name="paperless_billing" value="No">
+                      <span class="segment-btn">No</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="form-action-container">
+                <button type="submit" id="btn-predict" class="btn btn-primary btn-block btn-ripple">
+                  <span class="btn-text">Predict Churn Risk</span>
+                  <span class="btn-spinner" aria-hidden="true"></span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Result Card -->
+          <div class="glass-card result-card reveal-on-scroll" id="result-container" aria-live="polite">
+            <!-- Empty Placeholder State -->
+            <div id="result-empty" class="result-empty-state">
+              <div class="empty-icon-ring">
+                <svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M24 4v4M24 40v4M4 24h4M40 24h4M10 10l3 3M35 35l3 3M10 38l3-3M35 13l3-3"/>
+                  <circle cx="24" cy="24" r="10" stroke-dasharray="4 4"/>
+                </svg>
+              </div>
+              <h4 class="empty-title">Awaiting Customer Input</h4>
+              <p class="empty-text">
+                Configure the customer attributes on the left or click a sample preset to view real-time model predictions and retention tips.
+              </p>
+              <div class="empty-hint">
+                <span>Tip: Month-to-month contracts with Electronic checks trigger elevated churn risk.</span>
+              </div>
+            </div>
+
+            <!-- Active Prediction Result View -->
+            <div id="result-content" class="result-active-view" style="display: none;">
+              <div class="result-header">
+                <span class="result-badge-label">Prediction Summary</span>
+                <div id="risk-badge" class="risk-badge risk-high">
+                  <img id="risk-icon" src="/static/img/high-risk.svg" alt="Risk tier illustration" width="28" height="28">
+                  <span id="risk-text">High Risk</span>
+                </div>
+              </div>
+
+              <!-- Semicircle SVG Gauge -->
+              <div class="gauge-wrapper">
+                <svg class="gauge-svg" viewBox="0 0 240 135" width="240" height="135">
+                  <defs>
+                    <linearGradient id="gauge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#10b981" />
+                      <stop offset="50%" stop-color="#f59e0b" />
+                      <stop offset="100%" stop-color="#ef4444" />
+                    </linearGradient>
+                  </defs>
+                  <!-- Background Track -->
+                  <path d="M 30 120 A 90 90 0 0 1 210 120" class="gauge-bg-track" fill="none" stroke-width="18" stroke-linecap="round"/>
+                  <!-- Animated Progress Arc -->
+                  <path id="gauge-progress" d="M 30 120 A 90 90 0 0 1 210 120" class="gauge-fill-track" fill="none" stroke-width="18" stroke-linecap="round" stroke="url(#gauge-gradient)"/>
+                </svg>
+
+                <div class="gauge-content">
+                  <span class="gauge-percent" id="prob-percentage">0.0%</span>
+                  <span class="gauge-sublabel">Churn Probability</span>
+                </div>
+              </div>
+
+              <!-- Plain-English Verdict -->
+              <div class="verdict-banner" id="verdict-banner">
+                <p class="verdict-text" id="verdict-text">
+                  This customer is very likely to leave within the next billing cycle.
+                </p>
+              </div>
+
+              <!-- Recommended Actions / Retention Tips -->
+              <div class="retention-actions-section">
+                <h5 class="actions-heading">
+                  <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+                  </svg>
+                  Recommended Retention Playbook
+                </h5>
+                <ul class="suggestions-list" id="suggestions-list">
+                  <!-- Staggered animated recommendations injected here by JS -->
+                </ul>
+                <span class="action-note">* Rule-based heuristics derived from feature importance patterns.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Insights Section -->
+    <section class="insights-section" id="insights">
+      <div class="container">
+        <div class="section-header reveal-on-scroll">
+          <span class="section-tag">Model Transparency</span>
+          <h2 class="section-title">Evaluation Metrics &amp; Drivers</h2>
+          <p class="section-desc">
+            Rigorous evaluation across 1,407 stratified held-out test customers. All metrics are streamed live from the trained pipeline.
+          </p>
+        </div>
+
+        <!-- 5 KPI Cards Grid -->
+        <div class="metrics-cards-grid reveal-on-scroll">
+          <div class="metric-card">
+            <span class="metric-title">Test Accuracy</span>
+            <div class="metric-val" id="metric-accuracy" data-target="76.9" data-suffix="%">--%</div>
+            <span class="metric-sub">Correct overall predictions</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">ROC-AUC Score</span>
+            <div class="metric-val text-gradient" id="metric-roc" data-target="0.809" data-decimals="3">--</div>
+            <span class="metric-sub">Separation confidence score</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">Precision</span>
+            <div class="metric-val" id="metric-precision" data-target="55.7" data-suffix="%">--%</div>
+            <span class="metric-sub">Flagged customers who churned</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">Recall (Sensitivity)</span>
+            <div class="metric-val" id="metric-recall" data-target="64.4" data-suffix="%">--%</div>
+            <span class="metric-sub">Actual churners caught</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">F1 Score</span>
+            <div class="metric-val" id="metric-f1" data-target="0.597" data-decimals="3">--</div>
+            <span class="metric-sub">Harmonic precision/recall balance</span>
+          </div>
+        </div>
+
+        <!-- Comparison & Drivers Split -->
+        <div class="insights-grid">
+          <!-- Model Comparison Chart -->
+          <div class="glass-card insight-card reveal-on-scroll">
+            <div class="card-title-group">
+              <h3 class="card-title">Random Forest vs. Logistic Regression</h3>
+              <p class="card-subtext">Balanced class weighting comparison on identical test splits.</p>
+            </div>
+
+            <div class="comparison-bars-container" id="comparison-container">
+              <!-- Accuracy Bar -->
+              <div class="comp-group">
+                <div class="comp-label-row">
+                  <span class="comp-name">Overall Accuracy</span>
+                  <span class="comp-scores">RF: <strong>76.9%</strong> | LR: 72.7%</span>
+                </div>
+                <div class="comp-bar-track">
+                  <div class="comp-bar-fill rf-fill" style="--target-width: 76.9%;"></div>
+                  <div class="comp-bar-fill lr-fill" style="--target-width: 72.7%;"></div>
+                </div>
+              </div>
+
+              <!-- ROC-AUC Bar -->
+              <div class="comp-group">
+                <div class="comp-label-row">
+                  <span class="comp-name">ROC-AUC Discriminator</span>
+                  <span class="comp-scores">RF: <strong>0.809</strong> | LR: 0.836</span>
+                </div>
+                <div class="comp-bar-track">
+                  <div class="comp-bar-fill rf-fill" style="--target-width: 80.9%;"></div>
+                  <div class="comp-bar-fill lr-fill" style="--target-width: 83.6%;"></div>
+                </div>
+              </div>
+
+              <!-- Precision Bar -->
+              <div class="comp-group">
+                <div class="comp-label-row">
+                  <span class="comp-name">Precision (False Positive Shield)</span>
+                  <span class="comp-scores">RF: <strong>55.7%</strong> | LR: 49.2%</span>
+                </div>
+                <div class="comp-bar-track">
+                  <div class="comp-bar-fill rf-fill" style="--target-width: 55.7%;"></div>
+                  <div class="comp-bar-fill lr-fill" style="--target-width: 49.2%;"></div>
+                </div>
+              </div>
+
+              <!-- Recall Bar -->
+              <div class="comp-group">
+                <div class="comp-label-row">
+                  <span class="comp-name">Recall (Churner Detection)</span>
+                  <span class="comp-scores">RF: <strong>64.4%</strong> | LR: 80.8%</span>
+                </div>
+                <div class="comp-bar-track">
+                  <div class="comp-bar-fill rf-fill" style="--target-width: 64.4%;"></div>
+                  <div class="comp-bar-fill lr-fill" style="--target-width: 80.8%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="comp-legend">
+              <span class="legend-item"><span class="legend-box rf-box"></span> Random Forest (Production)</span>
+              <span class="legend-item"><span class="legend-box lr-box"></span> Logistic Regression (Baseline)</span>
+            </div>
+          </div>
+
+          <!-- Feature Importance Chart -->
+          <div class="glass-card insight-card reveal-on-scroll">
+            <div class="card-title-group">
+              <h3 class="card-title">What Drives Churn?</h3>
+              <p class="card-subtext">Top 8 feature weights extracted directly from the Random Forest model.</p>
+            </div>
+
+            <div class="feature-bars-list" id="feature-importance-list">
+              <!-- Dynamically populated from /api/feature-importance -->
+              <div class="skeleton-bar-row"></div>
+              <div class="skeleton-bar-row"></div>
+              <div class="skeleton-bar-row"></div>
+              <div class="skeleton-bar-row"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. About Section -->
+    <section class="about-section" id="about">
+      <div class="container">
+        <div class="section-header reveal-on-scroll">
+          <span class="section-tag">Architecture</span>
+          <h2 class="section-title">How It Works</h2>
+          <p class="section-desc">
+            A production-ready architecture designed for seamless model inference, robust validation, and rapid business action.
+          </p>
+        </div>
+
+        <!-- 3 Step Cards -->
+        <div class="steps-grid reveal-on-scroll">
+          <div class="step-card">
+            <div class="step-number">01</div>
+            <div class="step-icon-wrap">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </div>
+            <h4 class="step-title">Enter Details</h4>
+            <p class="step-text">
+              User provides customer contract, tenure, and subscription features. Pydantic validates data boundaries at the API layer.
+            </p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">02</div>
+            <div class="step-icon-wrap">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+              </svg>
+            </div>
+            <h4 class="step-title">Model Analyzes</h4>
+            <p class="step-text">
+              The scikit-learn pipeline applies StandardScaler &amp; OneHotEncoder transforms, then evaluates 200 balanced decision trees.
+            </p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">03</div>
+            <div class="step-icon-wrap">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <h4 class="step-title">Get Risk &amp; Actions</h4>
+            <p class="step-text">
+              FastAPI delivers an instant calibrated probability score and executes rule-based strategies to protect customer recurring revenue.
+            </p>
+          </div>
+        </div>
+
+        <!-- Tech Stack Badge Row -->
+        <div class="tech-stack-row reveal-on-scroll">
+          <span class="tech-badge">Python 3.10+</span>
+          <span class="tech-badge">Scikit-learn</span>
+          <span class="tech-badge">FastAPI</span>
+          <span class="tech-badge">Pandas</span>
+          <span class="tech-badge">Joblib</span>
+          <span class="tech-badge">Vanilla JavaScript (ES6)</span>
+          <span class="tech-badge">HTML5 / CSS3</span>
+        </div>
+
+        <!-- Project Links -->
+        <div class="project-links-row reveal-on-scroll">
+          <a href="/docs" target="_blank" class="btn btn-secondary" rel="noopener">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+            <span>Interactive OpenAPI Docs (/docs)</span>
+          </a>
+          <a href="https://github.com/Kumar-Ayush/customer-churn-prediction" target="_blank" class="btn btn-secondary" rel="noopener">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/>
+            </svg>
+            <span>GitHub Repository</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 6. Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-left">
+        <p class="footer-creator">
+          Built by <strong>Kumar Ayush</strong> &bull;
+          <a href="https://github.com/Kumar-Ayush" target="_blank" rel="noopener">GitHub</a> &bull;
+          <a href="https://linkedin.com/in/kumar-ayush" target="_blank" rel="noopener">LinkedIn</a>
+        </p>
+        <p class="footer-disclaimer">
+          Trained on the public IBM Telco dataset. For demonstration and educational portfolio purposes.
+        </p>
+      </div>
+      <div class="footer-right">
+        <span class="footer-status-pill">
+          <span class="status-indicator"></span> API Online (FastAPI)
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 400" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="hero-bg" x1="50" y1="30" x2="470" y2="370" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4f46e5" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.08"/>
+    </linearGradient>
+    <linearGradient id="accent-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="50%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="area-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.0"/>
+    </linearGradient>
+    <linearGradient id="card-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e1b4b" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <filter id="hero-shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+    <filter id="chip-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <style>
+    @keyframes floatScene {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+    @keyframes pulseOrb {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.15); opacity: 1; }
+    }
+    @keyframes floatBadge1 {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(1deg); }
+    }
+    @keyframes floatBadge2 {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-9px); }
+    }
+    .floating-main {
+      animation: floatScene 6s ease-in-out infinite;
+    }
+    .badge-float-1 {
+      animation: floatBadge1 4.5s ease-in-out infinite;
+      transform-origin: center;
+    }
+    .badge-float-2 {
+      animation: floatBadge2 5.2s ease-in-out infinite 0.5s;
+    }
+    .pulse-glow {
+      animation: pulseOrb 4s ease-in-out infinite;
+      transform-origin: center;
+    }
+  </style>
+
+  <!-- Ambient Glow Behind Elements -->
+  <circle cx="260" cy="190" r="140" fill="url(#hero-bg)" filter="url(#chip-glow)"/>
+  <circle cx="410" cy="110" r="45" fill="#6366f1" opacity="0.2" class="pulse-glow"/>
+  <circle cx="90" cy="270" r="35" fill="#06b6d4" opacity="0.2" class="pulse-glow"/>
+
+  <!-- Main Floating Group -->
+  <g class="floating-main">
+    <!-- Main Dashboard Card -->
+    <rect x="70" y="55" width="370" height="260" rx="20" fill="url(#card-grad)" 
+          stroke="rgba(255,255,255,0.14)" stroke-width="1.5" filter="url(#hero-shadow)"/>
+    
+    <!-- Dashboard Top Bar Window Controls -->
+    <circle cx="98" cy="78" r="4" fill="#ef4444" opacity="0.8"/>
+    <circle cx="112" cy="78" r="4" fill="#f59e0b" opacity="0.8"/>
+    <circle cx="126" cy="78" r="4" fill="#10b981" opacity="0.8"/>
+    <line x1="145" y1="78" x2="230" y2="78" stroke="rgba(255,255,255,0.15)" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Mini KPI stats row -->
+    <rect x="94" y="98" width="95" height="42" rx="10" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.06)"/>
+    <rect x="94" y="106" width="35" height="6" rx="3" fill="rgba(255,255,255,0.3)"/>
+    <text x="102" y="130" fill="#38bdf8" font-family="Inter, sans-serif" font-weight="700" font-size="14">84% Retention</text>
+
+    <rect x="202" y="98" width="95" height="42" rx="10" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.06)"/>
+    <rect x="202" y="106" width="35" height="6" rx="3" fill="rgba(255,255,255,0.3)"/>
+    <text x="210" y="130" fill="#10b981" font-family="Inter, sans-serif" font-weight="700" font-size="14">Low Risk</text>
+
+    <!-- Chart Panel -->
+    <g transform="translate(94, 155)">
+      <!-- Grid lines -->
+      <line x1="0" y1="20" x2="210" y2="20" stroke="rgba(255,255,255,0.05)" stroke-dasharray="3 3"/>
+      <line x1="0" y1="60" x2="210" y2="60" stroke="rgba(255,255,255,0.05)" stroke-dasharray="3 3"/>
+      <line x1="0" y1="100" x2="210" y2="100" stroke="rgba(255,255,255,0.1)"/>
+
+      <!-- Smooth Area and Line Chart -->
+      <path d="M0 80 Q 40 75, 70 45 T 140 35 T 210 15 L 210 100 L 0 100 Z" fill="url(#area-grad)"/>
+      <path d="M0 80 Q 40 75, 70 45 T 140 35 T 210 15" stroke="url(#accent-grad)" stroke-width="3" stroke-linecap="round" fill="none"/>
+      
+      <!-- Key data dots -->
+      <circle cx="70" cy="45" r="4" fill="#8b5cf6" stroke="#fff" stroke-width="1.5"/>
+      <circle cx="140" cy="35" r="4" fill="#06b6d4" stroke="#fff" stroke-width="1.5"/>
+      <circle cx="210" cy="15" r="5" fill="#38bdf8" stroke="#fff" stroke-width="2"/>
+    </g>
+
+    <!-- Customer Avatar & Status Circle on the right side of dashboard -->
+    <g transform="translate(350, 160)">
+      <circle cx="35" cy="35" r="38" fill="rgba(99,102,241,0.12)" stroke="url(#accent-grad)" stroke-width="1.5"/>
+      <circle cx="35" cy="35" r="28" fill="#1e1b4b"/>
+      
+      <!-- Customer Head & Shoulders Silhouette -->
+      <circle cx="35" cy="27" r="9" fill="#e2e8f0"/>
+      <path d="M21 47 C21 39, 49 39, 49 47 Z" fill="#94a3b8"/>
+      
+      <!-- Verified Badge Icon -->
+      <circle cx="55" cy="52" r="10" fill="#10b981"/>
+      <path d="M51 52 L54 55 L59 49" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      
+      <!-- Label below avatar -->
+      <text x="35" y="86" text-anchor="middle" fill="#cbd5e1" font-family="Inter, sans-serif" font-size="11" font-weight="600">Active Retained</text>
+    </g>
+  </g>
+
+  <!-- Floating Badge 1: Machine Learning Score Chip -->
+  <g class="badge-float-1" transform="translate(345, 40)">
+    <rect width="145" height="52" rx="14" fill="#1e1b4b" stroke="url(#accent-grad)" stroke-width="1.5" filter="url(#hero-shadow)"/>
+    <circle cx="26" cy="26" r="12" fill="rgba(16,185,129,0.15)"/>
+    <path d="M21 26 L24 29 L31 22" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="46" y="24" fill="#94a3b8" font-family="Inter, sans-serif" font-size="10" font-weight="500">Model ROC-AUC</text>
+    <text x="46" y="40" fill="#38bdf8" font-family="Inter, sans-serif" font-size="15" font-weight="800">0.836</text>
+  </g>
+
+  <!-- Floating Badge 2: Churn Alert Prevented -->
+  <g class="badge-float-2" transform="translate(35, 260)">
+    <rect width="155" height="54" rx="14" fill="#1e1b4b" stroke="rgba(255,255,255,0.16)" stroke-width="1.5" filter="url(#hero-shadow)"/>
+    <circle cx="28" cy="27" r="12" fill="rgba(99,102,241,0.2)"/>
+    <!-- Shield / Spark icon -->
+    <path d="M28 19 L33 22 V27 C33 30 28 33 28 33 C28 33 23 30 23 27 V22 Z" fill="#8b5cf6"/>
+    <text x="48" y="25" fill="#f8fafc" font-family="Inter, sans-serif" font-size="11" font-weight="700">Early Intervention</text>
+    <text x="48" y="41" fill="#10b981" font-family="Inter, sans-serif" font-size="10" font-weight="600">Actionable Rule Engine</text>
+  </g>
+</svg>
