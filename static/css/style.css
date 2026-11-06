@@ -1547,6 +1547,98 @@ body {
 }
 
 /* ==========================================================================
+   Expandable Sections & Accordion Buttons
+   ========================================================================== */
+.expandable-trigger-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.btn-expandable {
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 16px 28px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-focus);
+  background: var(--bg-surface);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-expandable:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+  background: var(--bg-surface-elevated);
+  border-color: var(--accent-indigo);
+}
+
+.btn-expandable .chevron-icon {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-expandable.is-expanded .chevron-icon {
+  transform: rotate(180deg);
+}
+
+.expandable-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 10px;
+}
+
+.expandable-content {
+  animation: expandFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes expandFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.simple-takeaway-box {
+  margin-top: 24px;
+  padding: 18px;
+  background: var(--bg-surface-solid);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.takeaway-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.takeaway-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--accent-cyan);
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
    Prefers Reduced Motion
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {

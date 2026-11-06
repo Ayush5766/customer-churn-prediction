@@ -2,7 +2,8 @@
  * ChurnGuard Frontend Application
  *
  * Handles live slider interactions, async REST API calls to FastAPI,
- * 60fps gauge animations, theme switching, and dynamic model metric rendering.
+ * 60fps gauge animations, theme switching, automatic scroll-to-result,
+ * and expandable insight drawers.
  */
 
 // DOM Elements & Selectors
@@ -22,6 +23,7 @@ const presetHighBtn = document.getElementById('btn-preset-high');
 const presetLowBtn = document.getElementById('btn-preset-low');
 const resetFormBtn = document.getElementById('btn-reset-form');
 
+const resultContainer = document.getElementById('result-container');
 const resultEmptyState = document.getElementById('result-empty');
 const resultContent = document.getElementById('result-content');
 const gaugeProgress = document.getElementById('gauge-progress');
@@ -36,14 +38,20 @@ const suggestionsList = document.getElementById('suggestions-list');
 const toastContainer = document.getElementById('toast-container');
 const featureImportanceList = document.getElementById('feature-importance-list');
 
+// Expandable Section Buttons
+const toggleTransparencyBtn = document.getElementById('toggle-transparency-btn');
+const transparencyContent = document.getElementById('transparency-content');
+
+const toggleArchitectureBtn = document.getElementById('toggle-architecture-btn');
+const architectureContent = document.getElementById('architecture-content');
+const navHowItWorksLink = document.getElementById('nav-how-it-works');
+
 // Semicircle gauge circumference for radius 90 (pi * 90 ≈ 282.74)
 const GAUGE_CIRCUMFERENCE = 283;
 
 
 /* ==========================================================================
    1. Theme Management (Dark / Light)
-   Why: Respects user preference and stores selection in localStorage
-   so returning visitors keep their preferred viewing theme.
    ========================================================================== */
 function initTheme() {
   const savedTheme = localStorage.getItem('churnguard_theme') || 'dark';
@@ -64,7 +72,6 @@ if (themeToggleBtn) {
 
 /* ==========================================================================
    2. Navbar Scroll Blur
-   Why: Provides visual separation between sticky nav and content when scrolling.
    ========================================================================== */
 function handleNavbarScroll() {
   if (window.scrollY > 20) {
@@ -78,8 +85,6 @@ window.addEventListener('scroll', handleNavbarScroll, { passive: true });
 
 /* ==========================================================================
    3. Interactive Form Sliders & Auto-Calculation
-   Why: Auto-calculating TotalCharges gives a realistic estimate,
-   preventing edge cases where tenure is high but total charges is zero.
    ========================================================================== */
 function updateSliderLabels() {
   const tenureVal = parseInt(tenureSlider.value, 10);
@@ -99,7 +104,6 @@ monthlySlider.addEventListener('input', updateSliderLabels);
 
 /* ==========================================================================
    4. Ripple Click Animation on Buttons
-   Why: Gives tactile 60fps micro-interaction feedback on user clicks.
    ========================================================================== */
 document.querySelectorAll('.btn-ripple').forEach(button => {
   button.addEventListener('click', function (e) {
@@ -123,7 +127,6 @@ document.querySelectorAll('.btn-ripple').forEach(button => {
 
 /* ==========================================================================
    5. Toast Notification Utility
-   Why: Communicates network/validation errors non-intrusively to the user.
    ========================================================================== */
 function showToast(message, type = 'error') {
   const toast = document.createElement('div');
@@ -141,8 +144,6 @@ function showToast(message, type = 'error') {
 
 /* ==========================================================================
    6. Form Presets & Reset Handlers
-   Why: Enables recruiters and testers to test high-risk and low-risk
-   edge cases with a single click without manual form typing.
    ========================================================================== */
 function setRadioValue(name, value) {
   const input = document.querySelector(`input[name="${name}"][value="${value}"]`);
@@ -198,14 +199,13 @@ function resetForm() {
   resultEmptyState.style.display = 'flex';
 }
 
-presetHighBtn.addEventListener('click', loadHighRiskPreset);
-presetLowBtn.addEventListener('click', loadLowRiskPreset);
-resetFormBtn.addEventListener('click', resetForm);
+if (presetHighBtn) presetHighBtn.addEventListener('click', loadHighRiskPreset);
+if (presetLowBtn) presetLowBtn.addEventListener('click', loadLowRiskPreset);
+if (resetFormBtn) resetFormBtn.addEventListener('click', resetForm);
 
 
 /* ==========================================================================
-   7. Smooth Numeric Count-Up Animation (requestAnimationFrame)
-   Why: Produces smooth 60fps easing transitions without external libraries.
+   7. Smooth Numeric Count-Up Animation
    ========================================================================== */
 function animateValue(element, start, end, duration, decimals = 0, suffix = '') {
   let startTime = null;
@@ -232,16 +232,15 @@ function animateValue(element, start, end, duration, decimals = 0, suffix = '') 
 
 /* ==========================================================================
    8. Prediction Execution & Animated Gauge Rendering
-   Why: Talks directly to FastAPI POST /predict using native ES6 fetch API.
+   With Automatic Scroll-Up to Result Box
    ========================================================================== */
 async function executePrediction() {
-  // Extract and validate values
   const tenure = parseInt(tenureSlider.value, 10);
   const monthlyCharges = parseFloat(monthlySlider.value);
   const totalCharges = parseFloat(totalChargesInput.value);
 
   if (isNaN(totalCharges) || totalCharges < 0) {
-    showToast('Please enter a valid non-negative number for Total Charges.');
+    showToast('Please enter a valid non-negative number for Total Spend.');
     return;
   }
 
@@ -303,7 +302,6 @@ function renderPredictionResult(result) {
   const percentage = prob * 100;
 
   // 1. Animate Semicircle SVG Gauge Fill
-  // strokeDashoffset: full = 283 (empty), 0 = 100% full
   const targetOffset = GAUGE_CIRCUMFERENCE - (prob * GAUGE_CIRCUMFERENCE);
   gaugeProgress.style.strokeDashoffset = targetOffset;
 
@@ -319,19 +317,19 @@ function renderPredictionResult(result) {
     verdictBanner.classList.add('verdict-low');
     riskIcon.src = '/static/img/low-risk.svg';
     riskText.textContent = 'Low Risk';
-    verdictText.textContent = 'This customer is satisfied and likely to remain retained.';
+    verdictText.textContent = 'This customer is satisfied and very likely to stay subscribed.';
   } else if (result.risk_level === 'Medium') {
     riskBadge.classList.add('risk-med');
     verdictBanner.classList.add('verdict-med');
     riskIcon.src = '/static/img/medium-risk.svg';
     riskText.textContent = 'Medium Risk';
-    verdictText.textContent = 'Customer shows vulnerability to churn. Targeted retention advised.';
+    verdictText.textContent = 'Customer shows signs of cancelling. Proactive retention advised.';
   } else {
     riskBadge.classList.add('risk-high');
     verdictBanner.classList.add('verdict-high');
     riskIcon.src = '/static/img/high-risk.svg';
     riskText.textContent = 'High Risk';
-    verdictText.textContent = 'High churn probability! Immediate retention action recommended.';
+    verdictText.textContent = 'High risk of cancellation! Immediate retention outreach recommended.';
   }
 
   // 4. Staggered list animation for recommendations
@@ -348,18 +346,98 @@ function renderPredictionResult(result) {
     `;
     suggestionsList.appendChild(li);
   });
+
+  // 5. AUTOMATIC SCROLL TO RESULT
+  // Smoothly scrolls up so the customer or recruiter immediately sees the output
+  if (resultContainer) {
+    const navbarHeight = 85;
+    const elementTop = resultContainer.getBoundingClientRect().top + window.pageYOffset;
+    const targetScrollY = Math.max(0, elementTop - navbarHeight);
+
+    window.scrollTo({
+      top: targetScrollY,
+      behavior: 'smooth'
+    });
+  }
 }
 
-churnForm.addEventListener('submit', function (e) {
-  e.preventDefault();
-  executePrediction();
-});
+if (churnForm) {
+  churnForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    executePrediction();
+  });
+}
 
 
 /* ==========================================================================
-   9. Load Live Metrics & Feature Importance from API
-   Why: All numbers displayed come dynamically from real training files,
-   strictly adhering to the rule against hardcoding or faking metrics.
+   9. Expandable Accordion Sections (Transparency & Architecture)
+   Why: Keeps the interface clean and customer-facing by default,
+   allowing curious users to expand the deeper explanation with one click.
+   ========================================================================== */
+function initExpandableDrawers() {
+  // 1. Transparency / Accuracy Drawer
+  if (toggleTransparencyBtn && transparencyContent) {
+    toggleTransparencyBtn.addEventListener('click', () => {
+      const isExpanded = toggleTransparencyBtn.getAttribute('aria-expanded') === 'true';
+      if (isExpanded) {
+        transparencyContent.style.display = 'none';
+        toggleTransparencyBtn.setAttribute('aria-expanded', 'false');
+        toggleTransparencyBtn.classList.remove('is-expanded');
+      } else {
+        transparencyContent.style.display = 'block';
+        toggleTransparencyBtn.setAttribute('aria-expanded', 'true');
+        toggleTransparencyBtn.classList.add('is-expanded');
+
+        // Trigger animation of feature bars inside when expanded
+        setTimeout(() => {
+          document.querySelectorAll('.feature-fill').forEach(fill => {
+            fill.style.width = fill.getAttribute('data-width');
+          });
+        }, 150);
+
+        // Smoothly scroll down slightly to reveal content
+        transparencyContent.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    });
+  }
+
+  // 2. Architecture / How It Works Drawer
+  if (toggleArchitectureBtn && architectureContent) {
+    toggleArchitectureBtn.addEventListener('click', () => {
+      const isExpanded = toggleArchitectureBtn.getAttribute('aria-expanded') === 'true';
+      if (isExpanded) {
+        architectureContent.style.display = 'none';
+        toggleArchitectureBtn.setAttribute('aria-expanded', 'false');
+        toggleArchitectureBtn.classList.remove('is-expanded');
+      } else {
+        architectureContent.style.display = 'block';
+        toggleArchitectureBtn.setAttribute('aria-expanded', 'true');
+        toggleArchitectureBtn.classList.add('is-expanded');
+        architectureContent.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    });
+  }
+
+  // 3. Navbar "How It Works" link opens the drawer if closed
+  if (navHowItWorksLink && toggleArchitectureBtn && architectureContent) {
+    navHowItWorksLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (architectureContent.style.display === 'none') {
+        architectureContent.style.display = 'block';
+        toggleArchitectureBtn.setAttribute('aria-expanded', 'true');
+        toggleArchitectureBtn.classList.add('is-expanded');
+      }
+      const section = document.getElementById('how-it-works');
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  }
+}
+
+
+/* ==========================================================================
+   10. Load Live Metrics & Feature Importance from API
    ========================================================================== */
 async function loadMetricsData() {
   try {
@@ -368,7 +446,6 @@ async function loadMetricsData() {
     const data = await res.json();
 
     const rf = data.random_forest;
-    const lr = data.logistic_regression;
 
     // Update Hero Stats Chips
     const statRecords = document.getElementById('hero-stat-records');
@@ -379,80 +456,17 @@ async function loadMetricsData() {
     if (statAuc) animateValue(statAuc, 0, rf.roc_auc * 100, 1200, 1, '%');
     if (statAcc) animateValue(statAcc, 0, rf.accuracy * 100, 1200, 1, '%');
 
-    // Update Insights Cards
+    // Update Plain-English Cards
     const accEl = document.getElementById('metric-accuracy');
-    const rocEl = document.getElementById('metric-roc');
     const precEl = document.getElementById('metric-precision');
     const recEl = document.getElementById('metric-recall');
-    const f1El = document.getElementById('metric-f1');
 
     if (accEl) animateValue(accEl, 0, rf.accuracy * 100, 1400, 1, '%');
-    if (rocEl) animateValue(rocEl, 0, rf.roc_auc, 1400, 3, '');
     if (precEl) animateValue(precEl, 0, rf.precision * 100, 1400, 1, '%');
     if (recEl) animateValue(recEl, 0, rf.recall * 100, 1400, 1, '%');
-    if (f1El) animateValue(f1El, 0, rf.f1, 1400, 3, '');
-
-    // Update Model Comparison Progress Bars
-    triggerComparisonBars(rf, lr);
   } catch (err) {
     console.warn('Could not load live metrics:', err);
   }
-}
-
-function triggerComparisonBars(rf, lr) {
-  // Dynamically set widths based on actual API payload
-  const compContainer = document.getElementById('comparison-container');
-  if (!compContainer) return;
-
-  compContainer.innerHTML = `
-    <!-- Accuracy -->
-    <div class="comp-group">
-      <div class="comp-label-row">
-        <span class="comp-name">Overall Accuracy</span>
-        <span class="comp-scores">RF: <strong>${(rf.accuracy * 100).toFixed(1)}%</strong> | LR: ${(lr.accuracy * 100).toFixed(1)}%</span>
-      </div>
-      <div class="comp-bar-track">
-        <div class="comp-bar-fill rf-fill" style="width: ${rf.accuracy * 100}%;"></div>
-        <div class="comp-bar-fill lr-fill" style="width: ${lr.accuracy * 100}%;"></div>
-      </div>
-    </div>
-
-    <!-- ROC-AUC -->
-    <div class="comp-group">
-      <div class="comp-label-row">
-        <span class="comp-name">ROC-AUC Discriminator</span>
-        <span class="comp-scores">RF: <strong>${rf.roc_auc.toFixed(3)}</strong> | LR: ${lr.roc_auc.toFixed(3)}</span>
-      </div>
-      <div class="comp-bar-track">
-        <div class="comp-bar-fill rf-fill" style="width: ${rf.roc_auc * 100}%;"></div>
-        <div class="comp-bar-fill lr-fill" style="width: ${lr.roc_auc * 100}%;"></div>
-      </div>
-    </div>
-
-    <!-- Precision -->
-    <div class="comp-group">
-      <div class="comp-label-row">
-        <span class="comp-name">Precision (False Alarm Shield)</span>
-        <span class="comp-scores">RF: <strong>${(rf.precision * 100).toFixed(1)}%</strong> | LR: ${(lr.precision * 100).toFixed(1)}%</span>
-      </div>
-      <div class="comp-bar-track">
-        <div class="comp-bar-fill rf-fill" style="width: ${rf.precision * 100}%;"></div>
-        <div class="comp-bar-fill lr-fill" style="width: ${lr.precision * 100}%;"></div>
-      </div>
-    </div>
-
-    <!-- Recall -->
-    <div class="comp-group">
-      <div class="comp-label-row">
-        <span class="comp-name">Recall (Churner Detection)</span>
-        <span class="comp-scores">RF: <strong>${(rf.recall * 100).toFixed(1)}%</strong> | LR: ${(lr.recall * 100).toFixed(1)}%</span>
-      </div>
-      <div class="comp-bar-track">
-        <div class="comp-bar-fill rf-fill" style="width: ${rf.recall * 100}%;"></div>
-        <div class="comp-bar-fill lr-fill" style="width: ${lr.recall * 100}%;"></div>
-      </div>
-    </div>
-  `;
 }
 
 async function loadFeatureImportanceData() {
@@ -464,7 +478,6 @@ async function loadFeatureImportanceData() {
     if (!featureImportanceList) return;
     featureImportanceList.innerHTML = '';
 
-    // Find maximum importance to scale bars proportionally
     const maxImportance = Math.max(...features.map(f => f.importance));
 
     features.forEach(item => {
@@ -485,12 +498,12 @@ async function loadFeatureImportanceData() {
       featureImportanceList.appendChild(row);
     });
 
-    // Trigger animated width expansion once added to DOM
+    // Animate width expansion
     setTimeout(() => {
       document.querySelectorAll('.feature-fill').forEach(fill => {
         fill.style.width = fill.getAttribute('data-width');
       });
-    }, 100);
+    }, 150);
   } catch (err) {
     console.warn('Could not load feature importance:', err);
   }
@@ -498,8 +511,7 @@ async function loadFeatureImportanceData() {
 
 
 /* ==========================================================================
-   10. IntersectionObserver Scroll Reveal
-   Why: Smoothly reveals sections and charts as the recruiter scrolls down.
+   11. IntersectionObserver Scroll Reveal
    ========================================================================== */
 function initScrollReveal() {
   const revealElements = document.querySelectorAll('.reveal-on-scroll');
@@ -527,6 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   updateSliderLabels();
   initScrollReveal();
+  initExpandableDrawers();
   loadMetricsData();
   loadFeatureImportanceData();
 });
