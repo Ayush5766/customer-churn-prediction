@@ -165,7 +165,7 @@ curl -X POST "http://127.0.0.1:8000/predict" \
   "risk_level": "High",
   "suggestions": [
     "Offer a discounted 1-year plan with a 15% rate lock guarantee.",
-    "Encourage automatic bank transfer or credit card with a $5 monthly bill credit.",
+    "Encourage automatic bank transfer or UPI/card payments with a ₹500 monthly bill discount.",
     "Offer a 3-month complimentary trial of 24/7 dedicated Tech Support."
   ]
 }
@@ -186,8 +186,8 @@ Evaluated on an 80/20 stratified hold-out test set (1,407 test samples):
 | **ROC-AUC** | **0.8360** | 0.8086 | High discrimination capability across decision thresholds |
 
 ### Top Churn Drivers (Random Forest Feature Importances):
-1. **Total spend to date ($)**: 22.87%
-2. **Monthly charges ($)**: 21.71%
+1. **Total spend to date (₹)**: 22.87%
+2. **Monthly charges (₹)**: 21.71%
 3. **Time as customer (months)**: 17.98%
 4. **Month-to-month contract**: 9.14%
 5. **No online security**: 3.66%

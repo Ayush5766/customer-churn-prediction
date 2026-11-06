@@ -91,7 +91,7 @@ function updateSliderLabels() {
   const monthlyVal = parseFloat(monthlySlider.value);
 
   tenureValueLabel.textContent = `${tenureVal} ${tenureVal === 1 ? 'month' : 'months'}`;
-  monthlyValueLabel.textContent = `$${monthlyVal.toFixed(2)}`;
+  monthlyValueLabel.textContent = `₹${monthlyVal.toFixed(2)}`;
 
   // Auto-estimate total charges if input has not been custom locked
   const estimatedTotal = (tenureVal * monthlyVal).toFixed(2);

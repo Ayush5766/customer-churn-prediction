@@ -1,10 +1,10 @@
 [
   {
-    "feature": "Total spend to date ($)",
+    "feature": "Total spend to date (\u20b9)",
     "importance": 0.2287
   },
   {
-    "feature": "Monthly charges ($)",
+    "feature": "Monthly charges (\u20b9)",
     "importance": 0.2171
   },
   {

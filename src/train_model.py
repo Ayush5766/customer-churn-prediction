@@ -41,8 +41,8 @@ CATEGORICAL_FEATURES: List[str] = [
 # Mapping technical feature names to clear plain-English labels for recruiters & business users
 HUMAN_FEATURE_NAMES: Dict[str, str] = {
     "tenure": "Time as customer (months)",
-    "MonthlyCharges": "Monthly charges ($)",
-    "TotalCharges": "Total spend to date ($)",
+    "MonthlyCharges": "Monthly charges (₹)",
+    "TotalCharges": "Total spend to date (₹)",
     "Contract_Month-to-month": "Month-to-month contract",
     "Contract_One year": "One-year contract",
     "Contract_Two year": "Two-year contract",

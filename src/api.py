@@ -104,13 +104,13 @@ class CustomerData(BaseModel):
     monthly_charges: float = Field(
         ...,
         ge=0.0,
-        description="Monthly service charge amount in USD (>= 0).",
+        description="Monthly service charge amount in INR (₹) (>= 0).",
         examples=[65.5],
     )
     total_charges: float = Field(
         ...,
         ge=0.0,
-        description="Total cumulative amount charged to customer in USD (>= 0).",
+        description="Total cumulative amount charged to customer in INR (₹) (>= 0).",
         examples=[786.0],
     )
     contract: Literal["Month-to-month", "One year", "Two year"] = Field(
@@ -186,7 +186,7 @@ def generate_retention_suggestions(data: CustomerData, probability: float) -> Li
 
     # High-churn driver: Electronic checks have highest churn among payment methods
     if data.payment_method == "Electronic check":
-        tips.append("Encourage automatic bank transfer or credit card with a $5 monthly bill credit.")
+        tips.append("Encourage automatic bank transfer or UPI/card payments with a ₹500 monthly bill discount.")
 
     # Internet customers lacking support or security leave significantly faster
     if data.tech_support == "No" and data.internet_service != "No":
