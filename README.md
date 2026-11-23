@@ -10,8 +10,6 @@ An end-to-end Machine Learning web platform and REST API that predicts whether a
 | :---: | :---: |
 | ![Dashboard Screenshot](screenshots/dashboard.png) | ![Result Screenshot](screenshots/result.png) |
 
-*(Place your screenshots in `screenshots/dashboard.png` and `screenshots/result.png`)*
-
 ---
 
 ## Key Features
