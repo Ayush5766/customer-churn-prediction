@@ -4,14 +4,6 @@ An end-to-end Machine Learning web platform and REST API that predicts whether a
 
 ---
 
-## Screenshots
-
-| Main Dashboard & Simulator | Risk Prediction & Retention Playbook |
-| :---: | :---: |
-| ![Dashboard Screenshot](screenshots/dashboard.png) | ![Result Screenshot](screenshots/result.png) |
-
----
-
 ## Key Features
 
 - **Predictive ML Pipeline**: Trained on the IBM Telco dataset using an ensemble `RandomForestClassifier` (200 trees, class-balanced) with built-in `StandardScaler` and `OneHotEncoder` preprocessing.
